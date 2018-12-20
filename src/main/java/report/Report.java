@@ -1,14 +1,17 @@
 package report;
 
 
+import log.Logger;
 import test.Test;
 import util.StringUtil;
 
 import java.util.ArrayList;
 
 public class Report {
-    private String numberReport; //номер отчета
+    private int numberReport; //номер отчета
+    private boolean validNumberReport = false;
     private String stand; //наименование стенда
+    private boolean validStand = false;
     private String testSuite; //наименование тестового набора
     private String startTime; //время запуска прогона
     private String launchDuration; //длительность прогона
@@ -16,7 +19,7 @@ public class Report {
     private int countPassed; //количество прошедших тестов
     private int countFailed; //количество упавших тестов
     private int countSkipped; //количество пропущенных тестов
-    private static ArrayList<Test> tests = new ArrayList<Test>(); //список всех тестов
+    public static ArrayList<Test> tests = new ArrayList<Test>(); //список всех тестов
 
     public Report(String report) {
         parseReport(report);
@@ -39,6 +42,52 @@ public class Report {
     }
 
     /**
+     * Возвращает наименование класса, в котором находится тест
+     *
+     * @param fullInfoAboutTest
+     */
+    private String getNameSuiteByFullInfoAboutTest(String fullInfoAboutTest) {
+        return fullInfoAboutTest
+                .replaceAll("(.*)logs_html\\/", "")
+                .replaceAll("_(.*)", "");
+    }
+
+    /**
+     * Возвращает имя теста на английском языке
+     *
+     * @param fullInfoAboutTest
+     */
+    private String getNameTestEngByFullInfoAboutTest(String fullInfoAboutTest) {
+        return "test" + fullInfoAboutTest
+                .replaceAll("(.*)logs_html\\/(.*)_test", "")
+                .replaceAll(".html\" target=\"(.*)", "");
+    }
+
+    /**
+     * Возвращает имя теста на русском языке
+     *
+     * @param fullInfoAboutTest
+     */
+    private String getNameTestRusByFullInfoAboutTest(String fullInfoAboutTest) {
+        return fullInfoAboutTest
+                .replaceAll("(.*)</a></td><td>&nbsp;", "")
+                .replaceAll("&nbsp;</td><td> (.*)", "");
+    }
+
+    /**
+     * Экранирует знаки в регулярном выражении
+     *
+     * @param text
+     */
+    private String convertRegularExpressionCharacters(String text) {
+        return text
+                .replaceAll("\\.", "\\\\.")
+                .replaceAll("\\/", "\\\\/")
+                .replaceAll("\\[", "\\\\[")
+                .replaceAll("\\]", "\\\\]");
+    }
+
+    /**
      * Парс всех успешно пройденных тестов и запись в массив
      */
     private void parsePassedTests(String report) {
@@ -47,25 +96,15 @@ public class Report {
         for (int i = 0; i < expectedCountPassedTest; i++) {
             try {
                 String fullInfoAboutTest = StringUtil.findMatchByRegexp(reportWork, "<tr><td><img width=\"25\"(.*)success.png(.*)");
-                String nameSuite = StringUtil
-                        .findMatchByRegexp(fullInfoAboutTest, "logs_html/(.*)target=\"_blank\">PASSED")
-                        .replaceAll("logs_html\\/", "")
-                        .replaceAll("_(.*)", "");
-                String nameTest = StringUtil
-                        .findMatchByRegexp(fullInfoAboutTest, "logs_html/(.*)target=\"")
-                        .replaceAll("logs_html\\/(.*)_", "")
-                        .replaceAll(".html\" target=\"", "");
-                Test passedTest = new Test(this.numberReport, nameSuite, nameTest, Test.StatusTest.PASSED);
+                String nameSuite = getNameSuiteByFullInfoAboutTest(fullInfoAboutTest);
+                String nameTestEng = getNameTestEngByFullInfoAboutTest(fullInfoAboutTest);
+                String nameTestRus = getNameTestRusByFullInfoAboutTest(fullInfoAboutTest);
+                Test passedTest = new Test(this.numberReport, nameSuite, nameTestEng, nameTestRus, Test.StatusTest.PASSED);
                 tests.add(passedTest);
-                fullInfoAboutTest = fullInfoAboutTest
-                        .replaceAll("\\.", "\\\\.")
-                        .replaceAll("\\/", "\\\\/")
-                        .replaceAll("\\[", "\\\\[")
-                        .replaceAll("\\]", "\\\\]");
-
+                fullInfoAboutTest = convertRegularExpressionCharacters(fullInfoAboutTest);
                 reportWork = reportWork.replaceAll(fullInfoAboutTest, "");
             } catch (Exception e) {
-                System.out.println("Успешно пройденный тест не найден! А должен быть!");
+                Logger.logError("Пропущенный тест не найден! А должен быть!");
             }
         }
     }
@@ -79,25 +118,15 @@ public class Report {
         for (int i = 0; i < expectedCountFailedTest; i++) {
             try {
                 String fullInfoAboutTest = StringUtil.findMatchByRegexp(reportWork, "<tr><td><img width=\"25\"(.*)fail.png\"></td><td bgcolor=#FF3300(.*)");
-                String nameSuite = StringUtil
-                        .findMatchByRegexp(fullInfoAboutTest, "logs_html/(.*)target=\"_blank\">FAILED")
-                        .replaceAll("logs_html\\/", "")
-                        .replaceAll("_(.*)", "");
-                String nameTest = StringUtil
-                        .findMatchByRegexp(fullInfoAboutTest, "logs_html/(.*)target=\"")
-                        .replaceAll("logs_html\\/(.*)_", "")
-                        .replaceAll(".html\" target=\"", "");
-                Test failedTest = new Test(this.numberReport, nameSuite, nameTest, Test.StatusTest.FAILED);
+                String nameSuite = getNameSuiteByFullInfoAboutTest(fullInfoAboutTest);
+                String nameTestEng = getNameTestEngByFullInfoAboutTest(fullInfoAboutTest);
+                String nameTestRus = getNameTestRusByFullInfoAboutTest(fullInfoAboutTest);
+                Test failedTest = new Test(this.numberReport, nameSuite, nameTestEng, nameTestRus, Test.StatusTest.FAILED);
                 tests.add(failedTest);
-                fullInfoAboutTest = fullInfoAboutTest
-                        .replaceAll("\\.", "\\\\.")
-                        .replaceAll("\\/", "\\\\/")
-                        .replaceAll("\\[", "\\\\[")
-                        .replaceAll("\\]", "\\\\]");
-
+                fullInfoAboutTest = convertRegularExpressionCharacters(fullInfoAboutTest);
                 reportWork = reportWork.replaceAll(fullInfoAboutTest, "");
             } catch (Exception e) {
-                System.out.println("Упавший тест не найден! А должен быть!");
+                Logger.logError("Пропущенный тест не найден! А должен быть!");
             }
         }
     }
@@ -111,25 +140,15 @@ public class Report {
         for (int i = 0; i < expectedCountSkippedTest; i++) {
             try {
                 String fullInfoAboutTest = StringUtil.findMatchByRegexp(reportWork, "<tr><td><img width=\"25\"(.*)fail.png\"></td><td bgcolor=#C0C0C0(.*)");
-                String nameSuite = StringUtil
-                        .findMatchByRegexp(fullInfoAboutTest, "logs_html/(.*)target=\"_blank\">SKIPPED")
-                        .replaceAll("logs_html\\/", "")
-                        .replaceAll("_(.*)", "");
-                String nameTest = StringUtil
-                        .findMatchByRegexp(fullInfoAboutTest, "logs_html/(.*)target=\"")
-                        .replaceAll("logs_html\\/(.*)_", "")
-                        .replaceAll(".html\" target=\"", "");
-                Test skippedTest = new Test(this.numberReport, nameSuite, nameTest, Test.StatusTest.SKIPPED);
+                String nameSuite = getNameSuiteByFullInfoAboutTest(fullInfoAboutTest);
+                String nameTestEng = getNameTestEngByFullInfoAboutTest(fullInfoAboutTest);
+                String nameTestRus = getNameTestRusByFullInfoAboutTest(fullInfoAboutTest);
+                Test skippedTest = new Test(this.numberReport, nameSuite, nameTestEng, nameTestRus, Test.StatusTest.SKIPPED);
                 tests.add(skippedTest);
-                fullInfoAboutTest = fullInfoAboutTest
-                        .replaceAll("\\.", "\\\\.")
-                        .replaceAll("\\/", "\\\\/")
-                        .replaceAll("\\[", "\\\\[")
-                        .replaceAll("\\]", "\\\\]");
-
+                fullInfoAboutTest = convertRegularExpressionCharacters(fullInfoAboutTest);
                 reportWork = reportWork.replaceAll(fullInfoAboutTest, "");
             } catch (Exception e) {
-                System.out.println("Пропущенный тест не найден! А должен быть!");
+                Logger.logError("Пропущенный тест не найден! А должен быть!");
             }
         }
     }
@@ -159,10 +178,23 @@ public class Report {
      * Парс номера отчета
      */
     private void parseNumberReport(String report) {
-        this.numberReport = StringUtil
-                .findMatchByRegexp(report, "youdo_android_testing/(.*)/artifact/diagram.png")
-                .replaceAll("(.*)youdo_android_testing\\/", "")
-                .replaceAll("/artifact(.*)", "");
+        int numberReport = Integer.parseInt(StringUtil
+                .findMatchByRegexp(report, "testing/(.*)/artifact/diagram.png")
+                .replaceAll("(.*)testing\\/", "")
+                .replaceAll("/artifact(.*)", ""));
+        setNumberReport(numberReport);
+    }
+
+    /**
+     * Сохраняет номер отчета
+     */
+    private void setNumberReport(int numberReport) {
+        if(!((1 < numberReport) && (numberReport < 9999))) {
+            Logger.logError("Получен ошибочный номер отчета: [" + numberReport + "]");
+        } else {
+            validNumberReport = true;
+            this.numberReport = numberReport;
+        }
     }
 
     /**
@@ -179,10 +211,23 @@ public class Report {
      * Парс стенда
      */
     private void parseStand(String report) {
-        this.stand = StringUtil
+        String stand = StringUtil
                 .findMatchByRegexp(report, "<h4>Стенд:(.*)")
                 .replaceAll("<h4>Стенд: ", "")
                 .replaceAll("</h4>", "");
+        setStand(stand);
+    }
+
+    /**
+     * Сохраняет имя стенда
+     */
+    private void setStand(String stand) {
+        if(!(stand.contains("test") && (stand.length() < 7))) {
+            Logger.logError("Получен ошибочное имя стенда: [" + stand + "]");
+        } else {
+            validStand = true;
+            this.stand = stand;
+        }
     }
 
     /**

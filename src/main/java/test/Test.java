@@ -1,9 +1,10 @@
 package test;
 
 public class Test {
-    String numberReport; //номер отчета
+    int numberReport; //номер отчета
     String nameSuite; //имя пакета, где находится тест
-    String nameTest; //имя теста
+    String nameTestEng; //имя теста Eng
+    String nameTestRus; //имя теста Rus
     int status; //состояние: 0-упал, 1-прошел, 2-скипнут
 
     public static class StatusTest {
@@ -12,10 +13,11 @@ public class Test {
         public static final Integer SKIPPED = 2; //пропущен
     }
 
-    public Test(String numberReport, String nameSuite, String nameTest, int status) {
+    public Test(int numberReport, String nameSuite, String nameTestEng, String nameTestRus, int status) {
         this.numberReport = numberReport;
         this.nameSuite = nameSuite;
-        this.nameTest = nameTest;
+        this.nameTestEng = nameTestEng;
+        this.nameTestRus = nameTestRus;
         this.status = status;
     }
 }
