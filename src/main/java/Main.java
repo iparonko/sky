@@ -18,11 +18,11 @@ public class Main {
                 headersNameGitLabLogin,
                 headersValueGitLabLogin
         );
-        //Api.printSourcePage(responseOpenPage);
 
         String fullPageReport = Api.getSourcePage(responseOpenPage);
 
-        Report report = new Report(fullPageReport);
-        report.printInfoAboutReport();
+        new Report(fullPageReport);
+
+        //Api.printSourcePage(responseOpenPage);
     }
 }
