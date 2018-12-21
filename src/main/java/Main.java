@@ -23,6 +23,6 @@ public class Main {
 
         new Report(fullPageReport);
 
-        //Api.printSourcePage(responseOpenPage);
+        Api.printSourcePage(responseOpenPage);
     }
 }
