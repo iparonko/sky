@@ -49,11 +49,14 @@ public class Report {
      * Проверка валидации отчета
      */
     private void assertValidReport() {
-        int totalCountTest = countPassed + countFailed + countSkipped;
-        if(validStand == true && totalCountTest == this.totalCountTests && validNumberReport == true) {
+        int totalCountTests = countPassed + countFailed + countSkipped;
+        if(validStand == true && totalCountTests == this.totalCountTests && validNumberReport == true) {
             printInfoAboutReport();
         } else {
-            Logger.logError("Отчет не прошел валидацию!");
+            Logger.logError("Отчет не прошел валидацию!\n" +
+                    "Валидация стенда: [" + this.validStand + "]\n" +
+                    "Валидация количества тестов: В отчете тестов [" + this.totalCountTests + "]. Распарсено тестов [" + totalCountTests + "]\n" +
+                    "Валидация номера отчета: [" + this.validNumberReport + "]");
         }
     }
 
