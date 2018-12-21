@@ -19,7 +19,7 @@ public class Api {
             connection.setReadTimeout(1000); //время чтения в миллисекундах
             connection.setDoOutput(true);
 
-            if (headersName != null && headersValue != null) {
+            if(headersName != null && headersValue != null) {
                 for (int i = 0; i < headersName.size(); i++) {
                     connection.setRequestProperty(headersName.get(i), headersValue.get(i));
                 }
