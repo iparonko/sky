@@ -1,3 +1,4 @@
+import db.SqlClient;
 import network.Api;
 import report.Report;
 
@@ -6,7 +7,7 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        ArrayList<String> headersNameGitLabLogin = new ArrayList<String>();
+/*        ArrayList<String> headersNameGitLabLogin = new ArrayList<String>();
         headersNameGitLabLogin.add("Cookie");
 
         ArrayList<String> headersValueGitLabLogin = new ArrayList<String>();
@@ -23,6 +24,12 @@ public class Main {
 
         new Report(fullPageReport);
 
-        Api.printSourcePage(responseOpenPage);
+        Api.printSourcePage(responseOpenPage);*/
+
+        SqlClient.connect();
+        String execute = SqlClient.execute();
+        System.out.println(execute);
     }
+
+
 }
