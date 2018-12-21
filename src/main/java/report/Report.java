@@ -9,16 +9,20 @@ import java.util.ArrayList;
 
 public class Report {
     private int numberReport; //номер отчета
-    private boolean validNumberReport = false;
+
     private String stand; //наименование стенда
-    private boolean validStand = false;
+
     private String testSuite; //наименование тестового набора
     private String startTime; //время запуска прогона
     private String launchDuration; //длительность прогона
-    private int totalNumberTests; //всего тестов
+    private int totalCountTests; //всего тестов
     private int countPassed; //количество прошедших тестов
     private int countFailed; //количество упавших тестов
     private int countSkipped; //количество пропущенных тестов
+
+    private boolean validStand = false;
+    private boolean validNumberReport = false;
+
     public static ArrayList<Test> tests = new ArrayList<Test>(); //список всех тестов
 
     public Report(String report) {
@@ -31,14 +35,26 @@ public class Report {
         parseTestSuite(report);
         parseStartTime(report);
         parseLaunchDuration(report);
-        parseNumberTests(report);
+        parseCountTests(report);
         parseCountPassed(report);
         parseCountFailed(report);
         parseCountSkipped(report);
         parsePassedTests(report);
         parseFailedTests(report);
         parseSkippedTests(report);
-        printInfoAboutReport();
+        assertValidReport();
+    }
+
+    /**
+     * Проверка валидации отчета
+     */
+    private void assertValidReport() {
+        int totalCountTest = countPassed + countFailed + countSkipped;
+        if(validStand == true && totalCountTest == this.totalCountTests && validNumberReport == true) {
+            printInfoAboutReport();
+        } else {
+            Logger.logError("Отчет не прошел валидацию!");
+        }
     }
 
     /**
@@ -253,8 +269,8 @@ public class Report {
     /**
      * Парс общего количества тестов
      */
-    private void parseNumberTests(String report) {
-        this.totalNumberTests = Integer.parseInt(StringUtil
+    private void parseCountTests(String report) {
+        this.totalCountTests = Integer.parseInt(StringUtil
                 .findMatchByRegexp(report, "<h4>Всего тестов:(.*)")
                 .replaceAll("<h4>Всего тестов: ", "")
                 .replaceAll(" &nbsp; <font color=green(.*)", ""));
@@ -296,7 +312,7 @@ public class Report {
                 "Наименование тестового набора: [" + testSuite + "]\n" +
                 "Время начало прогона: [" + startTime + "]\n" +
                 "Длительность прогона: [" + launchDuration + "]\n" +
-                "Всего тестов: [" + totalNumberTests + "]\n" +
+                "Всего тестов: [" + totalCountTests + "]\n" +
                 "Успешные: [" + countPassed + "]\n" +
                 "Упавшие: [" + countFailed + "]\n" +
                 "Пропущенные: [" + countSkipped + "]\n" +
