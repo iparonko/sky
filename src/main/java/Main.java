@@ -1,20 +1,29 @@
-import db.SqlClient;
 import network.Api;
+import report.DbReport;
 import report.Report;
+import util.DataGeneratorUtil;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-/*        ArrayList<String> headersNameGitLabLogin = new ArrayList<String>();
+        for (int i = 547; i < 586; i++) {
+            testMoreReport(i);
+        }
+
+        //testMoreReport(434);
+    }
+
+    public synchronized static void testMoreReport(int a) throws Exception {
+        ArrayList<String> headersNameGitLabLogin = new ArrayList<>();
         headersNameGitLabLogin.add("Cookie");
 
-        ArrayList<String> headersValueGitLabLogin = new ArrayList<String>();
+        ArrayList<String> headersValueGitLabLogin = new ArrayList<>();
         headersValueGitLabLogin.add("кука"); //Cookie
 
         HttpURLConnection responseOpenPage = Api.execute(
-                "ссылка на отчет",
+                "ссылка",
                 "GET",
                 headersNameGitLabLogin,
                 headersValueGitLabLogin
@@ -22,14 +31,11 @@ public class Main {
 
         String fullPageReport = Api.getSourcePage(responseOpenPage);
 
-        new Report(fullPageReport);
+        Report report = new Report(fullPageReport);
 
-        Api.printSourcePage(responseOpenPage);*/
+        //System.out.println(fullPageReport);
 
-        SqlClient.connect();
-        String execute = SqlClient.execute();
-        System.out.println(execute);
+        String guidSessionKey = DataGeneratorUtil.generateUUID();
+        DbReport.insertReport(report, guidSessionKey);
     }
-
-
 }

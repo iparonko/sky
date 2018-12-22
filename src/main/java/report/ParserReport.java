@@ -99,7 +99,7 @@ public class ParserReport {
                 String nameTestEng = getNameTestEngByFullInfoAboutTest(fullInfoAboutTest);
                 String nameTestRus = getNameTestRusByFullInfoAboutTest(fullInfoAboutTest);
                 Test passedTest = new Test(report.getNumberReport(), nameSuite, nameTestEng, nameTestRus, Test.StatusTest.PASSED);
-                report.tests.add(passedTest);
+                report.addTestInTestsArray(passedTest);
                 fullInfoAboutTest = convertRegularExpressionCharacters(fullInfoAboutTest);
                 reportWork = reportWork.replaceAll(fullInfoAboutTest, "");
             } catch (Exception e) {
@@ -121,7 +121,7 @@ public class ParserReport {
                 String nameTestEng = getNameTestEngByFullInfoAboutTest(fullInfoAboutTest);
                 String nameTestRus = getNameTestRusByFullInfoAboutTest(fullInfoAboutTest);
                 Test failedTest = new Test(report.getNumberReport(), nameSuite, nameTestEng, nameTestRus, Test.StatusTest.FAILED);
-                report.tests.add(failedTest);
+                report.addTestInTestsArray(failedTest);
                 fullInfoAboutTest = convertRegularExpressionCharacters(fullInfoAboutTest);
                 reportWork = reportWork.replaceAll(fullInfoAboutTest, "");
             } catch (Exception e) {
@@ -143,7 +143,7 @@ public class ParserReport {
                 String nameTestEng = getNameTestEngByFullInfoAboutTest(fullInfoAboutTest);
                 String nameTestRus = getNameTestRusByFullInfoAboutTest(fullInfoAboutTest);
                 Test skippedTest = new Test(report.getNumberReport(), nameSuite, nameTestEng, nameTestRus, Test.StatusTest.SKIPPED);
-                report.tests.add(skippedTest);
+                report.addTestInTestsArray(skippedTest);
                 fullInfoAboutTest = convertRegularExpressionCharacters(fullInfoAboutTest);
                 reportWork = reportWork.replaceAll(fullInfoAboutTest, "");
             } catch (Exception e) {
@@ -198,10 +198,35 @@ public class ParserReport {
      * Парс длительности прогона
      */
     private void parseLaunchDuration(Report report) {
-        report.setLaunchDuration(StringUtil
+        String launchDurationFullInfo = StringUtil
                 .findMatchByRegexp(report.getSourcePage(), "Длительность:(.*)")
                 .replaceAll("Длительность: ", "")
-                .replaceAll("</h4>", ""));
+                .replaceAll("</h4>", "");
+        System.out.println(launchDurationFullInfo);
+        int hour = 0;
+        int minute = 0;
+        int second = 0;
+
+        try {
+            hour = Integer.valueOf(StringUtil.findMatchByRegexp(launchDurationFullInfo, "\\d{1,2} ча").replaceAll(" ча", "")) * 60 * 60;
+        } catch (Exception e) {
+
+        }
+
+        try {
+            minute = Integer.valueOf(StringUtil.findMatchByRegexp(launchDurationFullInfo, "\\d{1,2} мин.").replaceAll(" мин.", "")) * 60;
+        } catch (Exception e) {
+
+        }
+
+        try {
+            second = Integer.valueOf(StringUtil.findMatchByRegexp(launchDurationFullInfo, "\\d{1,2} сек.").replaceAll(" сек.", ""));
+        } catch (Exception e) {
+
+        }
+
+        int totalTime = hour + minute + second;
+        report.setLaunchDuration(totalTime);
     }
 
     /**

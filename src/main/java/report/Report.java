@@ -12,7 +12,7 @@ public class Report {
     private String stand; //наименование стенда
     private String testSuite; //наименование тестового набора
     private String startTime; //время запуска прогона
-    private String launchDuration; //длительность прогона
+    private int launchDuration; //длительность прогона (в секундах)
     private int totalCountTests; //всего тестов
     private int countPassed; //количество прошедших тестов
     private int countFailed; //количество упавших тестов
@@ -21,11 +21,18 @@ public class Report {
     private boolean validStand = false;
     private boolean validNumberReport = false;
 
-    public static ArrayList<Test> tests = new ArrayList<Test>(); //список всех тестов
+    private ArrayList<Test> tests = new ArrayList<>(); //список всех тестов
 
     public Report(String report) {
         this.sourcePage = report;
         new ParserReport(this);
+    }
+
+    /**
+     * Добавляет тест в массив (ссылку на него)
+     */
+    public void addTestInTestsArray(Test test) {
+        tests.add(test);
     }
 
     /**
@@ -118,7 +125,7 @@ public class Report {
     /**
      * Устанавливает значение длительности прогона
      */
-    public void setLaunchDuration(String launchDuration) {
+    public void setLaunchDuration(int launchDuration) {
         this.launchDuration = launchDuration;
     }
 
@@ -155,6 +162,27 @@ public class Report {
      */
     public int getCountSkipped() {
         return this.countSkipped;
+    }
+
+    /**
+     * Возвращает наименование стенда
+     */
+    public String getStand() {
+        return this.stand;
+    }
+
+    /**
+     * Возвращает наименование тестового плана
+     */
+    public String getTestSuite() {
+        return this.testSuite;
+    }
+
+    /**
+     * Возвращает длительность прогона (в секундах)
+     */
+    public int getLaunchDuration() {
+        return this.launchDuration;
     }
 
     public void printInfoAboutReport() {
