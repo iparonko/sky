@@ -20,6 +20,7 @@ public class Api {
             connection.setConnectTimeout(1000); //время подключения в миллисекундах
             connection.setReadTimeout(1000); //время чтения в миллисекундах
             connection.setDoOutput(true);
+            connection.setInstanceFollowRedirects(false);
 
             if(headersName != null && headersValue != null) {
                 for (int i = 0; i < headersName.size(); i++) {
