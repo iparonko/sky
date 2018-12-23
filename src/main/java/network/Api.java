@@ -10,10 +10,16 @@ import java.util.ArrayList;
 public class Api {
     private static String jenkinsCookie = "";
 
+    /**
+     * Устанавливает jenkins сookie
+     */
     public static void setJenkinsCookie() throws Exception {
         jenkinsCookie = ApiRequest.getCookieForJenkins();
     }
 
+    /**
+     * Возвращает jenkins сookie
+     */
     public static String getJenkinsCookie() {
         return jenkinsCookie;
     }

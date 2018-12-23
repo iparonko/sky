@@ -10,7 +10,7 @@ public class SqlClient {
     public static int getLastReport() throws Exception {
         ArrayList<String> result = DbUtil.executeSelect(SqlBuilder.getLastReport());
         if(result.get(0).equals("null")) {
-            throw new Exception("Не найдено максимальный номер отчета");
+            throw new Exception("Не найден максимальный номер отчета");
         }
         return Integer.parseInt(result.get(0));
     }
