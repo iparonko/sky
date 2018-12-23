@@ -17,8 +17,8 @@ public class Api {
 
             connection.setRequestMethod(requestMethod);
             connection.setUseCaches(false); //не кешировать
-            connection.setConnectTimeout(1000); //время подключения в миллисекундах
-            connection.setReadTimeout(1000); //время чтения в миллисекундах
+            connection.setConnectTimeout(10000); //время подключения в миллисекундах
+            connection.setReadTimeout(10000); //время чтения в миллисекундах
             connection.setDoOutput(true);
             connection.setInstanceFollowRedirects(false);
 
