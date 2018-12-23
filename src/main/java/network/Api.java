@@ -8,6 +8,15 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class Api {
+    private static String jenkinsCookie = "";
+
+    public static void setJenkinsCookie() throws Exception {
+        jenkinsCookie = ApiRequest.getCookieForJenkins();
+    }
+
+    public static String getJenkinsCookie() {
+        return jenkinsCookie;
+    }
 
     public static HttpURLConnection execute(String url, String requestMethod, ArrayList<String> headersName, ArrayList<String> headersValue) throws Exception {
         HttpURLConnection connection;

@@ -6,13 +6,15 @@ import util.StringUtil;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
-import static network.Api.assertResponseCode;
-import static network.Api.getSourcePage;
+import static network.Api.*;
 import static settings.Accounts.LOGIN_JENKINS;
 import static settings.Accounts.PASSWORD_JENKINS;
 
 public class ApiRequest {
 
+    /**
+     * Возвращает jenkins cookie
+     */
     public static String getCookieForJenkins() throws Exception {
         String cookie = "";
         int tryCount = 5;
@@ -33,6 +35,9 @@ public class ApiRequest {
         return cookie;
     }
 
+    /**
+     * Генерация jenkins cookie
+     */
     private static String generateCookieForJenkins() throws Exception {
         //запрос 1
         HttpURLConnection response1 = Api.execute(
@@ -151,5 +156,41 @@ public class ApiRequest {
         );
         assertResponseCode(response8, 200);
         return response1Cookie;
+    }
+
+    /**
+     * Возвращает все номера сборок андроид прогонов
+     */
+    public static HttpURLConnection getAllBuildsAndroid() throws Exception {
+        ArrayList<String> headersNameGitLabLogin = new ArrayList<>();
+        headersNameGitLabLogin.add("Cookie");
+        ArrayList<String> headersValueGitLabLogin = new ArrayList<>();
+        headersValueGitLabLogin.add(getJenkinsCookie());
+        HttpURLConnection response = Api.execute(
+                "http://build.youdo.sg/view/%D0%A2%D0%B5%D1%81%D1%82%D0%BE%D0%B2%D1%8B%D0%B9%20%D1%81%D1%82%D0%B5%D0%BD%D0%B4/job/staging/job/youdo_android_testing/buildTimeTrend",
+                "GET",
+                headersNameGitLabLogin,
+                headersValueGitLabLogin
+        );
+        return response;
+    }
+
+    /**
+     * Возвращает код страницы отчета
+     *
+     * @param numberReport
+     */
+    public static HttpURLConnection getPageReport(int numberReport) throws Exception {
+        ArrayList<String> headersNameGitLabLogin = new ArrayList<>();
+        headersNameGitLabLogin.add("Cookie");
+        ArrayList<String> headersValueGitLabLogin = new ArrayList<>();
+        headersValueGitLabLogin.add(getJenkinsCookie());
+        HttpURLConnection response = Api.execute(
+                "http://build.youdo.sg/job/staging/job/youdo_android_testing/" + numberReport + "/artifact/report/report.html",
+                "GET",
+                headersNameGitLabLogin,
+                headersValueGitLabLogin
+        );
+        return response;
     }
 }

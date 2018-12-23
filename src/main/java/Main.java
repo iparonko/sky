@@ -1,6 +1,6 @@
+import builds.BuildsInfo;
 import db.SqlClient;
 import network.Api;
-import network.ApiRequest;
 import report.DbReport;
 import report.Report;
 import util.DataGeneratorUtil;
@@ -8,34 +8,37 @@ import util.DataGeneratorUtil;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
+import static network.Api.setJenkinsCookie;
+import static network.ApiRequest.getPageReport;
+
 public class Main {
     public static void main(String[] args) throws Exception {
-        String cookieJenkins = ApiRequest.getCookieForJenkins();
-        int lastReportInDb = SqlClient.getLastReport();
-
-        for (int i = (lastReportInDb + 1); i < 560; i++) {
-            testMoreReport(i, cookieJenkins);
-        }
-
-        //testMoreReport(585, cookieJenkins);
+        setJenkinsCookie();
+        checkAndSaveNewReport();
     }
 
-    public synchronized static void testMoreReport(int numberReport, String cookieJenkins) throws Exception {
-        ArrayList<String> headersNameGitLabLogin = new ArrayList<>();
-        headersNameGitLabLogin.add("Cookie");
-        ArrayList<String> headersValueGitLabLogin = new ArrayList<>();
-        headersValueGitLabLogin.add(cookieJenkins);
-        HttpURLConnection responseOpenPage = Api.execute(
-                "http://build.youdo.sg/job/staging/job/youdo_android_testing/" + numberReport + "/artifact/report/report.html",
-                "GET",
-                headersNameGitLabLogin,
-                headersValueGitLabLogin
-        );
+    public synchronized static void checkAndSaveNewReport() throws Exception {
+        int lastReportInDb = SqlClient.getLastReport();
+        ArrayList<Integer> allBuildsAndroid = BuildsInfo.getAllBuildsAndroid();
+        ArrayList<Integer> finalAllBuildsAndroid = new ArrayList<>();
+        int countBuilds = allBuildsAndroid.size();
+        for (int i = 0; i < countBuilds; i++) {
+            if(lastReportInDb < allBuildsAndroid.get(i)) {
+                finalAllBuildsAndroid.add(allBuildsAndroid.get(i));
+            }
+        }
+        int finalCountBuilds = finalAllBuildsAndroid.size();
+        if(finalAllBuildsAndroid.size() > 0) {
+            for (int i = 0; i < finalCountBuilds; i++) {
+                saveNewReport(finalAllBuildsAndroid.get(i));
+            }
+        }
+    }
 
-        String fullPageReport = Api.getSourcePage(responseOpenPage);
-
+    public synchronized static void saveNewReport(int numberReport) throws Exception {
+        HttpURLConnection response = getPageReport(numberReport);
+        String fullPageReport = Api.getSourcePage(response);
         Report report = new Report(fullPageReport);
-
         String guidSessionKey = DataGeneratorUtil.generateUUID();
         DbReport.insertReport(report, guidSessionKey);
     }
