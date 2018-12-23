@@ -18,15 +18,11 @@ public class Main {
         testMoreReport(585, cookieJenkins);
     }
 
-    public synchronized static void testMoreReport(int a) throws Exception {
-        String cookieJenkins = ApiRequest.getCookieForJenkins();
-
+    public synchronized static void testMoreReport(int numberReport, String cookieJenkins ) throws Exception {
         ArrayList<String> headersNameGitLabLogin = new ArrayList<>();
         headersNameGitLabLogin.add("Cookie");
-
         ArrayList<String> headersValueGitLabLogin = new ArrayList<>();
-        headersValueGitLabLogin.add(cookieJenkins); //Cookie
-
+        headersValueGitLabLogin.add(cookieJenkins);
         HttpURLConnection responseOpenPage = Api.execute(
                 "http://build.youdo.sg/job/staging/job/youdo_android_testing/" + numberReport + "/artifact/report/report.html",
                 "GET",
