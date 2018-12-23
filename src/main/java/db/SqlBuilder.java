@@ -24,6 +24,9 @@ public class SqlBuilder {
             "'<sessionKey>' " +
             ")";
 
+    private static String GET_LAST_REPORT = "SELECT MAX(NumberReport) " +
+            "FROM Report";
+
     public static String insertReport(int numberReport, String stand, String testSuite, int launchDuraction, int totalCountTests, int countPassed, int countFailed, int countSkipped, String sessionKey) {
         return INSERT_REPORT
                 .replace("<numberReport>", String.valueOf(numberReport))
@@ -35,5 +38,9 @@ public class SqlBuilder {
                 .replace("<countFailed>", String.valueOf(countFailed))
                 .replace("<countSkipped>", String.valueOf(countSkipped))
                 .replace("<sessionKey>", sessionKey);
+    }
+
+    public static String getLastReport() {
+        return GET_LAST_REPORT;
     }
 }

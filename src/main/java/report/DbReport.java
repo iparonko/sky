@@ -3,7 +3,7 @@ package report;
 import db.SqlClient;
 
 public class DbReport {
-    public static void insertReport(Report report, String sessionKey) {
+    public static void insertReport(Report report, String sessionKey) throws Exception {
         int numberReport = report.getNumberReport();
         String stand = report.getStand();
         String testSuite = report.getTestSuite();
@@ -14,5 +14,4 @@ public class DbReport {
         int countSkipped = report.getCountSkipped();
         SqlClient.insertReport(numberReport, stand, testSuite, launchDuraction, totalCountTests, countPassed, countFailed, countSkipped, sessionKey);
     }
-
 }

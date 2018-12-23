@@ -202,7 +202,6 @@ public class ParserReport {
                 .findMatchByRegexp(report.getSourcePage(), "Длительность:(.*)")
                 .replaceAll("Длительность: ", "")
                 .replaceAll("</h4>", "");
-        System.out.println(launchDurationFullInfo);
         int hour = 0;
         int minute = 0;
         int second = 0;

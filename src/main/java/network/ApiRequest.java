@@ -1,26 +1,50 @@
 package network;
 
+import log.Logger;
 import util.StringUtil;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
+import static network.Api.assertResponseCode;
 import static network.Api.getSourcePage;
 import static settings.Accounts.LOGIN_JENKINS;
 import static settings.Accounts.PASSWORD_JENKINS;
 
 public class ApiRequest {
+
     public static String getCookieForJenkins() throws Exception {
-        //запрос 1 (код ответа:403)
+        String cookie = "";
+        int tryCount = 5;
+        while (tryCount > 0) {
+            try {
+                cookie = generateCookieForJenkins();
+                tryCount = 0;
+            } catch (Exception e) {
+                tryCount--;
+                if(tryCount > 0) {
+                    Thread.sleep(2000);
+                    Logger.logError("Пробуем повторно отправить запрос. Попыток: " + tryCount);
+                } else {
+                    throw e;
+                }
+            }
+        }
+        return cookie;
+    }
+
+    private static String generateCookieForJenkins() throws Exception {
+        //запрос 1
         HttpURLConnection response1 = Api.execute(
                 "http://build.youdo.sg/",
                 "GET",
                 null,
                 null
         );
+        assertResponseCode(response1, 403);
         String response1Cookie = response1.getHeaderField("Set-Cookie").replaceAll(";(.*)", "");
 
-        //запрос 2 (код ответа:302)
+        //запрос 2
         ArrayList<String> headersNameRequest2 = new ArrayList<>();
         ArrayList<String> headersValueRequest2 = new ArrayList<>();
         headersNameRequest2.add("Cookie");
@@ -31,29 +55,32 @@ public class ApiRequest {
                 headersNameRequest2,
                 headersValueRequest2
         );
+        assertResponseCode(response2, 302);
         String response2Location = response2.getHeaderField("Location");
 
-        //запрос 3 (код ответа:302)
+        //запрос 3
         HttpURLConnection response3 = Api.execute(
                 response2Location,
                 "GET",
                 null,
                 null
         );
+        assertResponseCode(response3, 302);
         String response3Cookie = response3.getHeaderField("Set-Cookie").replaceAll(";(.*)", "");
         String response3Location = response3.getHeaderField("Location");
 
-        //запрос 4 (код ответа:302)
+        //запрос 4
         ArrayList<String> headersNameRequest4 = new ArrayList<>();
         ArrayList<String> headersValueRequest4 = new ArrayList<>();
         headersNameRequest4.add("cookie");
-        headersValueRequest4.add(response3Cookie); //Cookie
+        headersValueRequest4.add(response3Cookie);
         HttpURLConnection response4 = Api.execute(
                 response3Location,
                 "GET",
                 headersNameRequest4,
                 headersValueRequest4
         );
+        assertResponseCode(response4, 200);
         String response4Cookie = response4.getHeaderField("Set-Cookie").replaceAll(";(.*)", "");
         String token = StringUtil
                 .findMatchByRegexp(getSourcePage(response4), "<meta name=\"csrf-token\" content=\"(.*)")
@@ -61,7 +88,7 @@ public class ApiRequest {
                 .replaceAll("\" />", "")
                 .replaceAll("\\+", "%2B");
 
-        //запрос 5 (код ответа:302)
+        //запрос 5
         ArrayList<String> headersNameRequest5 = new ArrayList<>();
         ArrayList<String> headersValueRequest5 = new ArrayList<>();
         headersNameRequest5.add("cookie");
@@ -79,11 +106,11 @@ public class ApiRequest {
                 headersNameRequest5,
                 headersValueRequest5
         );
-
+        assertResponseCode(response5, 302);
         String response5Location = response5.getHeaderField("Location");
         String response5Cookie = response5.getHeaderField("Set-Cookie").replaceAll(";(.*)", "");
 
-        //запрос 6 (код ответа:302)
+        //запрос 6
         ArrayList<String> headersNameRequest6 = new ArrayList<>();
         ArrayList<String> headersValueRequest6 = new ArrayList<>();
         headersNameRequest6.add("cookie");
@@ -94,9 +121,10 @@ public class ApiRequest {
                 headersNameRequest6,
                 headersValueRequest6
         );
+        assertResponseCode(response6, 302);
         String response6Location = response6.getHeaderField("Location");
 
-        //запрос 7 (код ответа:302)
+        //запрос 7
         ArrayList<String> headersNameRequest7 = new ArrayList<>();
         ArrayList<String> headersValueRequest7 = new ArrayList<>();
         headersNameRequest7.add("Cookie");
@@ -107,9 +135,10 @@ public class ApiRequest {
                 headersNameRequest7,
                 headersValueRequest7
         );
+        assertResponseCode(response7, 302);
         String response7Location = response7.getHeaderField("Location");
 
-        //запрос 8 (код ответа:200)
+        //запрос 8
         ArrayList<String> headersNameRequest8 = new ArrayList<>();
         ArrayList<String> headersValueRequest8 = new ArrayList<>();
         headersNameRequest8.add("Cookie");
@@ -120,12 +149,7 @@ public class ApiRequest {
                 headersNameRequest8,
                 headersValueRequest8
         );
-
-        if(response8.getResponseCode() != 200) {
-            return "unsuccessful_attempt";
-
-        }
-
+        assertResponseCode(response8, 200);
         return response1Cookie;
     }
 }

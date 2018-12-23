@@ -1,3 +1,4 @@
+import db.SqlClient;
 import network.Api;
 import network.ApiRequest;
 import report.DbReport;
@@ -10,15 +11,16 @@ import java.util.ArrayList;
 public class Main {
     public static void main(String[] args) throws Exception {
         String cookieJenkins = ApiRequest.getCookieForJenkins();
+        int lastReportInDb = SqlClient.getLastReport();
 
-       /* for (int i = 547; i < 586; i++) {
-            testMoreReport(i,cookieJenkins);
-        }*/
+        for (int i = (lastReportInDb + 1); i < 560; i++) {
+            testMoreReport(i, cookieJenkins);
+        }
 
-        testMoreReport(585, cookieJenkins);
+        //testMoreReport(585, cookieJenkins);
     }
 
-    public synchronized static void testMoreReport(int numberReport, String cookieJenkins ) throws Exception {
+    public synchronized static void testMoreReport(int numberReport, String cookieJenkins) throws Exception {
         ArrayList<String> headersNameGitLabLogin = new ArrayList<>();
         headersNameGitLabLogin.add("Cookie");
         ArrayList<String> headersValueGitLabLogin = new ArrayList<>();

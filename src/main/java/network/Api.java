@@ -57,4 +57,13 @@ public class Api {
         }
         return sb.toString();
     }
+
+    public static void assertResponseCode(HttpURLConnection response, int expectedStatusCode) throws Exception {
+        int actualStatusCode = response.getResponseCode();
+        if(actualStatusCode != expectedStatusCode) {
+            throw new Exception("\nОжидамый код ответа [" + expectedStatusCode + "]\n" +
+                    "Актуальный код ответа [" + actualStatusCode + "]\n" +
+                    "URL [" + response.getURL() + "]");
+        }
+    }
 }

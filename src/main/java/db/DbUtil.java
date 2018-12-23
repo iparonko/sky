@@ -3,6 +3,7 @@ package db;
 import log.Logger;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DbUtil {
     private static Connection connecion = null;
@@ -28,31 +29,40 @@ public class DbUtil {
         }
     }
 
-    public synchronized static String executeSelect(String sql) {
+    public synchronized static ArrayList<String> executeSelect(String sql) {
+        ArrayList<String> result = new ArrayList<>();
         String request = String.format(sql);
-        try (ResultSet set = statment.executeQuery(request)) {
-            if (set.next()) {
-                return set.getString("Name");
+        try (ResultSet resultset = statment.executeQuery(request)) {
+            if (resultset.next()) {
+                ResultSetMetaData rsmd = resultset.getMetaData();
+                for(int i = 1; i <= rsmd.getColumnCount(); ++i) {
+                    String value = resultset.getString(i);
+                    if (value == null) {
+                        value = "null";
+                    }
+                    result.add(value);
+                }
+            } else {
+                Logger.logError("Результат не найден");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return null;
+        return result;
     }
 
-    public synchronized static String executeInsert(String sql) {
+    public synchronized static String executeInsert(String sql) throws Exception {
         String request = String.format(sql);
         try {
             int response = statment.executeUpdate(request);
-            if (response == 1) {
+            if(response == 1) {
                 Logger.logSuccess("Запрос выполнен! \n" + request);
             } else {
                 Logger.logError("Запрос не выполнен! \n" + request);
             }
         } catch (SQLException e) {
-            //Logger.logError("Запрос не выполнен! \n" + request);
-            //Logger.logError(e.getMessage());
-            e.printStackTrace();
+            throw new Exception("Добавление строк в таблицу не выполнено!\n" +
+                    e.getMessage());
         }
         return null;
     }
