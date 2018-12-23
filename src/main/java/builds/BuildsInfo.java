@@ -42,7 +42,7 @@ public class BuildsInfo {
             String statusBuild = StringUtil.findMatchByRegexp(fullInfoAboutBuild, "alt=\".*?\\ ")
                     .replaceAll("alt=\"", "")
                     .replaceAll(" ", "");
-            if(statusBuild.equals("Failed")) { //не учитывать Aborted(остановленные прогоны) отчеты (отчет не формируется и подставляется кривой отчет)
+            if(statusBuild.equals("Failed") || statusBuild.equals("Success")) { //не учитывать Aborted(остановленные прогоны) отчеты (отчет не формируется и подставляется кривой отчет)
                 addBuildAndroid(numberBuild);
             }
         }
