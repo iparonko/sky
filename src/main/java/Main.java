@@ -1,5 +1,6 @@
 import builds.BuildsInfo;
 import db.SqlClient;
+import log.Logger;
 import network.Api;
 import report.DbReport;
 import report.Report;
@@ -33,6 +34,7 @@ public class Main {
                 saveNewReport(finalAllBuildsAndroid.get(i));
             }
         }
+        Logger.logSuccess("Все отчеты успешно загружены в базу данных!");
     }
 
     public synchronized static void saveNewReport(int numberReport) throws Exception {
@@ -41,5 +43,6 @@ public class Main {
         Report report = new Report(fullPageReport);
         String guidSessionKey = DataGeneratorUtil.generateUUID();
         DbReport.insertReport(report, guidSessionKey);
+        DbReport.insertAllTest(report, guidSessionKey);
     }
 }

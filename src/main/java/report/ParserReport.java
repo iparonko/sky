@@ -45,7 +45,7 @@ public class ParserReport {
      *
      * @param fullInfoAboutTest
      */
-    private String getNameSuiteByFullInfoAboutTest(String fullInfoAboutTest) {
+    private String getNamePackageSuiteByFullInfoAboutTest(String fullInfoAboutTest) {
         return fullInfoAboutTest
                 .replaceAll("(.*)logs_html\\/", "")
                 .replaceAll("_(.*)", "");
@@ -90,64 +90,58 @@ public class ParserReport {
      * Парс всех успешно пройденных тестов и запись в массив
      */
     private void parsePassedTests(Report report) {
-        int expectedCountPassedTest = report.getCountPassed();
-        String reportWork = report.getSourcePage();
-        for (int i = 0; i < expectedCountPassedTest; i++) {
-            try {
-                String fullInfoAboutTest = StringUtil.findMatchByRegexp(reportWork, "<tr><td><img width=\"25\"(.*)success.png(.*)");
-                String nameSuite = getNameSuiteByFullInfoAboutTest(fullInfoAboutTest);
-                String nameTestEng = getNameTestEngByFullInfoAboutTest(fullInfoAboutTest);
-                String nameTestRus = getNameTestRusByFullInfoAboutTest(fullInfoAboutTest);
-                Test passedTest = new Test(report.getNumberReport(), nameSuite, nameTestEng, nameTestRus, Test.StatusTest.PASSED);
-                report.addTestInTestsArray(passedTest);
-                fullInfoAboutTest = convertRegularExpressionCharacters(fullInfoAboutTest);
-                reportWork = reportWork.replaceAll(fullInfoAboutTest, "");
-            } catch (Exception e) {
-                Logger.logError("Пропущенный тест не найден! А должен быть!");
-            }
-        }
+        String regexpTest = "<tr><td><img width=\"25\"(.*)success.png(.*)";
+        parseTestsByStatus(report, regexpTest, Test.StatusTest.PASSED);
     }
 
     /**
      * Парс всех упавших тестов и запись в массив
      */
     private void parseFailedTests(Report report) {
-        int expectedCountFailedTest = report.getCountFailed();
-        String reportWork = report.getSourcePage();
-        for (int i = 0; i < expectedCountFailedTest; i++) {
-            try {
-                String fullInfoAboutTest = StringUtil.findMatchByRegexp(reportWork, "<tr><td><img width=\"25\"(.*)fail.png\"></td><td bgcolor=#FF3300(.*)");
-                String nameSuite = getNameSuiteByFullInfoAboutTest(fullInfoAboutTest);
-                String nameTestEng = getNameTestEngByFullInfoAboutTest(fullInfoAboutTest);
-                String nameTestRus = getNameTestRusByFullInfoAboutTest(fullInfoAboutTest);
-                Test failedTest = new Test(report.getNumberReport(), nameSuite, nameTestEng, nameTestRus, Test.StatusTest.FAILED);
-                report.addTestInTestsArray(failedTest);
-                fullInfoAboutTest = convertRegularExpressionCharacters(fullInfoAboutTest);
-                reportWork = reportWork.replaceAll(fullInfoAboutTest, "");
-            } catch (Exception e) {
-                Logger.logError("Пропущенный тест не найден! А должен быть!");
-            }
-        }
+        String regexpTest = "<tr><td><img width=\"25\"(.*)fail.png\"></td><td bgcolor=#FF3300(.*)";
+        parseTestsByStatus(report, regexpTest, Test.StatusTest.FAILED);
     }
 
     /**
      * Парс всех пропущенных тестов и запись в массив
      */
     private void parseSkippedTests(Report report) {
-        int expectedCountSkippedTest = report.getCountSkipped();
-        String reportWork = report.getSourcePage();
-        for (int i = 0; i < expectedCountSkippedTest; i++) {
+        String regexpTest = "<tr><td><img width=\"25\"(.*)fail.png\"></td><td bgcolor=#C0C0C0(.*)";
+        parseTestsByStatus(report, regexpTest, Test.StatusTest.SKIPPED);
+    }
+
+    /**
+     * Парс тестов с определенным статусом
+     * @param report - номер отчета
+     * @param regexpTest - регулярка, где находится тест
+     * @param statusTest - статус теста
+     */
+    private void parseTestsByStatus(Report report, String regexpTest, int statusTest) {
+        int expectedCountTest = -1;
+        if(statusTest == Test.StatusTest.FAILED) {
+            expectedCountTest = report.getCountFailed();
+        } else if(statusTest == Test.StatusTest.PASSED) {
+            expectedCountTest = report.getCountPassed();
+        } else if(statusTest == Test.StatusTest.SKIPPED) {
+            expectedCountTest = report.getCountSkipped();
+        }
+        String reportWork = report.getSourcePage()
+                .replaceAll("\\+", "")
+                .replaceAll("\\(", "")
+                .replaceAll("\\)", "")
+                .replaceAll("-", "");
+        for (int i = 0; i < expectedCountTest; i++) {
             try {
-                String fullInfoAboutTest = StringUtil.findMatchByRegexp(reportWork, "<tr><td><img width=\"25\"(.*)fail.png\"></td><td bgcolor=#C0C0C0(.*)");
-                String nameSuite = getNameSuiteByFullInfoAboutTest(fullInfoAboutTest);
+                String fullInfoAboutTest = StringUtil.findMatchByRegexp(reportWork, regexpTest);
+                String namePackageSuite = getNamePackageSuiteByFullInfoAboutTest(fullInfoAboutTest);
                 String nameTestEng = getNameTestEngByFullInfoAboutTest(fullInfoAboutTest);
                 String nameTestRus = getNameTestRusByFullInfoAboutTest(fullInfoAboutTest);
-                Test skippedTest = new Test(report.getNumberReport(), nameSuite, nameTestEng, nameTestRus, Test.StatusTest.SKIPPED);
-                report.addTestInTestsArray(skippedTest);
+                Test failedTest = new Test(report.getNumberReport(), namePackageSuite, nameTestEng, nameTestRus, statusTest);
+                report.addTestInTestsArray(failedTest);
                 fullInfoAboutTest = convertRegularExpressionCharacters(fullInfoAboutTest);
                 reportWork = reportWork.replaceAll(fullInfoAboutTest, "");
             } catch (Exception e) {
-                Logger.logError("Пропущенный тест не найден! А должен быть!");
+                Logger.logError("Пропущенный тест со статусом [" + statusTest + "]");
             }
         }
     }
@@ -188,10 +182,19 @@ public class ParserReport {
      * Парс времени запуска прогона
      */
     private void parseStartTime(Report report) {
-        report.setStartTime(StringUtil
+        String fullInfoStartTime = StringUtil
                 .findMatchByRegexp(report.getSourcePage(), "<h4>Время запуска:(.*)")
                 .replaceAll("<h4>Время запуска: ", "")
-                .replaceAll(" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Длительность:(.*)", ""));
+                .replaceAll(" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Длительность:(.*)", "");
+        String year = StringUtil.findMatchByRegexp(fullInfoStartTime, "\\d{4}");
+        String month = StringUtil.findMatchByRegexp(fullInfoStartTime, "\\.\\d{1,2}\\.")
+                .replaceAll("\\.", "");
+        String day = StringUtil.findMatchByRegexp(fullInfoStartTime, "^\\d{1,2}");
+        String time = StringUtil.findMatchByRegexp(fullInfoStartTime, " (.*)")
+                .replaceAll(" ", "")
+                .replaceAll("\\.", ":");
+        String finalFullInfoStartTime = year + "-" + month + "-" + day + " " + time;
+        report.setStartTime(finalFullInfoStartTime);
     }
 
     /**

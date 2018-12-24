@@ -36,6 +36,13 @@ public class Report {
     }
 
     /**
+     * Возвращает массив с тестами
+     */
+    public ArrayList<Test> getTestsArray() {
+        return tests;
+    }
+
+    /**
      * Возвращает количество успешно пройденных тестов
      */
     public int getCountPassed() {
@@ -183,6 +190,13 @@ public class Report {
      */
     public int getLaunchDuration() {
         return this.launchDuration;
+    }
+
+    /**
+     * Возвращает время начало прогона
+     */
+    public String getStartTime() {
+        return this.startTime;
     }
 
     public void printInfoAboutReport() {

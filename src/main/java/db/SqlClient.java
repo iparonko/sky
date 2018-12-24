@@ -3,8 +3,8 @@ package db;
 import java.util.ArrayList;
 
 public class SqlClient {
-    public static void insertReport(int numberReport, String stand, String testSuite, int launchDuraction, int totalCountTests, int countPassed, int countFailed, int countSkipped, String sessionKey) throws Exception {
-        DbUtil.executeInsert(SqlBuilder.insertReport(numberReport, stand, testSuite, launchDuraction, totalCountTests, countPassed, countFailed, countSkipped, sessionKey));
+    public static void insertReport(int numberReport, String stand, String testSuite, int launchDuraction, String startTime, int totalCountTests, int countPassed, int countFailed, int countSkipped, String sessionKey) throws Exception {
+        DbUtil.executeInsert(SqlBuilder.insertReport(numberReport, stand, testSuite, launchDuraction, startTime, totalCountTests, countPassed, countFailed, countSkipped, sessionKey));
     }
 
     public static int getLastReport() throws Exception {
@@ -13,5 +13,9 @@ public class SqlClient {
             throw new Exception("Не найден максимальный номер отчета");
         }
         return Integer.parseInt(result.get(0));
+    }
+
+    public static void insertTest(int numberReport, String namePackageSuite, String nameTestEng, String nameTestRus, int status, String sessionKey) throws Exception {
+        DbUtil.executeInsert(SqlBuilder.insertTest(numberReport, namePackageSuite, nameTestEng, nameTestRus, status, sessionKey));
     }
 }
