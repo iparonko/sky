@@ -46,7 +46,7 @@ public class SqlBuilder {
             "'<sessionKey>' " +
             ");";
 
-    public static String insertTest(int numberReport, String namePackageSuite, String nameTestEng, String nameTestRus,int status, String sessionKey) {
+    public static String insertTest(int numberReport, String namePackageSuite, String nameTestEng, String nameTestRus, int status, String sessionKey) {
         return INSERT_TEST
                 .replace("<numberReport>", String.valueOf(numberReport))
                 .replace("<namePackageSuite>", namePackageSuite)

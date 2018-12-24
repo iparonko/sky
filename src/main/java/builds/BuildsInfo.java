@@ -20,7 +20,7 @@ public class BuildsInfo {
         return allNumberBuildsAndroid;
     }
 
-    public static ArrayList<Integer> getAllBuildsAndroid() throws Exception {
+    public static ArrayList<Integer> getAllBuildsAndroid() {
         ArrayList<String> fullInfoAboutAllBuilds = new ArrayList<>();
         ArrayList<String> headersNameGitLabLogin = new ArrayList<>();
         headersNameGitLabLogin.add("Cookie");

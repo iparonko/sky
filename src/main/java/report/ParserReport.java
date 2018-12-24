@@ -1,8 +1,10 @@
 package report;
 
-import log.Logger;
 import test.Test;
 import util.StringUtil;
+
+import static log.LoggerInfo.logError;
+import static log.LoggerInfo.logException;
 
 public class ParserReport {
     ParserReport(Report report) {
@@ -31,9 +33,9 @@ public class ParserReport {
     private void assertValidReport(Report report) {
         int totalCountTests = report.getCountPassed() + report.getCountFailed() + report.getCountSkipped();
         if(report.getValidStand() == true && totalCountTests == report.getTotalCountTests() && report.getValidNumberReport() == true) {
-            report.printInfoAboutReport();
+            report.logInfoAboutReport();
         } else {
-            Logger.logError("Отчет не прошел валидацию!\n" +
+            logError("Отчет не прошел валидацию!\n" +
                     "Валидация стенда: [" + report.getValidStand() + "]\n" +
                     "Валидация количества тестов: В отчете тестов [" + report.getTotalCountTests() + "]. Распарсено тестов [" + totalCountTests + "]\n" +
                     "Валидация номера отчета: [" + report.getValidNumberReport() + "]");
@@ -112,7 +114,8 @@ public class ParserReport {
 
     /**
      * Парс тестов с определенным статусом
-     * @param report - номер отчета
+     *
+     * @param report     - номер отчета
      * @param regexpTest - регулярка, где находится тест
      * @param statusTest - статус теста
      */
@@ -141,7 +144,7 @@ public class ParserReport {
                 fullInfoAboutTest = convertRegularExpressionCharacters(fullInfoAboutTest);
                 reportWork = reportWork.replaceAll(fullInfoAboutTest, "");
             } catch (Exception e) {
-                Logger.logError("Пропущенный тест со статусом [" + statusTest + "]");
+                logException("Пропущенный тест со статусом [" + statusTest + "]", e);
             }
         }
     }

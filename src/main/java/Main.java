@@ -1,6 +1,5 @@
 import builds.BuildsInfo;
 import db.SqlClient;
-import log.Logger;
 import network.Api;
 import report.DbReport;
 import report.Report;
@@ -9,16 +8,17 @@ import util.DataGeneratorUtil;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
+import static log.LoggerInfo.logSuccess;
 import static network.Api.setJenkinsCookie;
 import static network.ApiRequest.getPageReport;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         setJenkinsCookie();
         checkAndSaveNewReport();
     }
 
-    public synchronized static void checkAndSaveNewReport() throws Exception {
+    public synchronized static void checkAndSaveNewReport() {
         int lastReportInDb = SqlClient.getLastReport();
         ArrayList<Integer> allBuildsAndroid = BuildsInfo.getAllBuildsAndroid();
         ArrayList<Integer> finalAllBuildsAndroid = new ArrayList<>();
@@ -34,10 +34,10 @@ public class Main {
                 saveNewReport(finalAllBuildsAndroid.get(i));
             }
         }
-        Logger.logSuccess("Все отчеты успешно загружены в базу данных!");
+        logSuccess("Все отчеты успешно загружены в базу данных!");
     }
 
-    public synchronized static void saveNewReport(int numberReport) throws Exception {
+    public synchronized static void saveNewReport(int numberReport) {
         HttpURLConnection response = getPageReport(numberReport);
         String fullPageReport = Api.getSourcePage(response);
         Report report = new Report(fullPageReport);

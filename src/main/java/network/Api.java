@@ -7,13 +7,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import static log.LoggerInfo.*;
+
 public class Api {
     private static String jenkinsCookie = "";
 
     /**
      * Устанавливает jenkins сookie
      */
-    public static void setJenkinsCookie() throws Exception {
+    public static void setJenkinsCookie() {
         jenkinsCookie = ApiRequest.getCookieForJenkins();
     }
 
@@ -24,59 +26,76 @@ public class Api {
         return jenkinsCookie;
     }
 
-    public static HttpURLConnection execute(String url, String requestMethod, ArrayList<String> headersName, ArrayList<String> headersValue) throws Exception {
-        HttpURLConnection connection;
+    /**
+     * Выполняет API запрос
+     */
+    public static HttpURLConnection execute(String url, String requestMethod, ArrayList<String> headersName, ArrayList<String> headersValue) {
+        HttpURLConnection connection = null;
 
         try {
             connection = (HttpURLConnection) new URL(url).openConnection();
-
             connection.setRequestMethod(requestMethod);
             connection.setUseCaches(false); //не кешировать
             connection.setConnectTimeout(10000); //время подключения в миллисекундах
             connection.setReadTimeout(10000); //время чтения в миллисекундах
             connection.setDoOutput(true);
             connection.setInstanceFollowRedirects(false);
-
             if(headersName != null && headersValue != null) {
                 for (int i = 0; i < headersName.size(); i++) {
                     connection.setRequestProperty(headersName.get(i), headersValue.get(i));
                 }
             }
-
             connection.connect();
-
-            System.out.println("[" + requestMethod + "][" + connection.getResponseMessage() + "][" + connection.getResponseCode() + "][" + url + "]");
+            logSuccess("[" + requestMethod + "][" + connection.getResponseMessage() + "][" + connection.getResponseCode() + "][" + url + "]");
         } catch (IOException e) {
-            throw new Exception("Запрос не выполнен!");
+            logException("Произошла ошибка при выполнении API запроса", e);
         }
         return connection;
     }
 
-    public static void printSourcePage(HttpURLConnection connection) throws IOException {
+    /**
+     * Намечатать код страницы в консоль (для отладки)
+     */
+    public static void printSourcePage(HttpURLConnection connection) {
         System.out.println(getSourcePage(connection));
     }
 
-    public static String getSourcePage(HttpURLConnection connection) throws IOException {
+    /**
+     * Возвращает код страницы
+     */
+    public static String getSourcePage(HttpURLConnection connection) {
         StringBuilder sb = new StringBuilder();
-        BufferedReader in = null;
         try {
-            in = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
+            BufferedReader in = null;
+            try {
+                in = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
 
-        String line;
-        while ((line = in.readLine()) != null) {
-            sb.append(line);
-            sb.append("\n");
+            String line;
+            while ((line = in.readLine()) != null) {
+                sb.append(line);
+                sb.append("\n");
+            }
+        } catch (IOException e) {
+            logException("Произошла ошибка при получении кода страницы", e);
         }
         return sb.toString();
     }
 
-    public static void assertResponseCode(HttpURLConnection response, int expectedStatusCode) throws Exception {
-        int actualStatusCode = response.getResponseCode();
+    /**
+     * Проверяет код ответа
+     */
+    public static void assertResponseCode(HttpURLConnection response, int expectedStatusCode) {
+        int actualStatusCode = 0;
+        try {
+            actualStatusCode = response.getResponseCode();
+        } catch (IOException e) {
+            logException("Произошла ошибка при получении актуального кода ответа API запроса", e);
+        }
         if(actualStatusCode != expectedStatusCode) {
-            throw new Exception("\nОжидамый код ответа [" + expectedStatusCode + "]\n" +
+            logError("\nОжидамый код ответа [" + expectedStatusCode + "]\n" +
                     "Актуальный код ответа [" + actualStatusCode + "]\n" +
                     "URL [" + response.getURL() + "]");
         }

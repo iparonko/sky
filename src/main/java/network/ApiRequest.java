@@ -1,11 +1,12 @@
 package network;
 
-import log.Logger;
 import util.StringUtil;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
+import static log.LoggerInfo.logError;
+import static log.LoggerInfo.logException;
 import static network.Api.*;
 import static settings.Accounts.LOGIN_JENKINS;
 import static settings.Accounts.PASSWORD_JENKINS;
@@ -15,9 +16,9 @@ public class ApiRequest {
     /**
      * Возвращает jenkins cookie
      */
-    public static String getCookieForJenkins() throws Exception {
+    public static String getCookieForJenkins() {
         String cookie = "";
-        int tryCount = 5;
+        int tryCount = 3;
         while (tryCount > 0) {
             try {
                 cookie = generateCookieForJenkins();
@@ -25,10 +26,14 @@ public class ApiRequest {
             } catch (Exception e) {
                 tryCount--;
                 if(tryCount > 0) {
-                    Thread.sleep(2000);
-                    Logger.logError("Пробуем повторно отправить запрос. Попыток: " + tryCount);
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e1) {
+                        logException("Произошла ошибка при выполнении sleep метода!", e);
+                    }
+                    logError("Пробуем повторно отправить запрос. Попыток: " + tryCount);
                 } else {
-                    throw e;
+                    logException("Произошла ошибка при генерации jenkins cookie!", e);
                 }
             }
         }
@@ -38,7 +43,7 @@ public class ApiRequest {
     /**
      * Генерация jenkins cookie
      */
-    private static String generateCookieForJenkins() throws Exception {
+    private static String generateCookieForJenkins() {
         //запрос 1
         HttpURLConnection response1 = Api.execute(
                 "http://build.youdo.sg/",
@@ -161,7 +166,7 @@ public class ApiRequest {
     /**
      * Возвращает все номера сборок андроид прогонов
      */
-    public static HttpURLConnection getAllBuildsAndroid() throws Exception {
+    public static HttpURLConnection getAllBuildsAndroid() {
         ArrayList<String> headersNameGitLabLogin = new ArrayList<>();
         headersNameGitLabLogin.add("Cookie");
         ArrayList<String> headersValueGitLabLogin = new ArrayList<>();
@@ -180,7 +185,7 @@ public class ApiRequest {
      *
      * @param numberReport
      */
-    public static HttpURLConnection getPageReport(int numberReport) throws Exception {
+    public static HttpURLConnection getPageReport(int numberReport) {
         ArrayList<String> headersNameGitLabLogin = new ArrayList<>();
         headersNameGitLabLogin.add("Cookie");
         ArrayList<String> headersValueGitLabLogin = new ArrayList<>();

@@ -1,9 +1,9 @@
 package db;
 
-import log.Logger;
-
 import java.sql.*;
 import java.util.ArrayList;
+
+import static log.LoggerInfo.*;
 
 public class DbUtil {
     private static Connection connecion = null;
@@ -15,9 +15,9 @@ public class DbUtil {
             connecion = DriverManager.getConnection("jdbc:sqlite:sky.db");
             statment = connecion.createStatement();
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            logException("Произошла ошибка при выполнении подключения к базе данных!", e);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logException("Произошла ошибка при выполнении подключения к базе данных!", e);
         }
     }
 
@@ -25,7 +25,7 @@ public class DbUtil {
         try {
             connecion.close();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logException("Произошла ошибка при выполнении отключения от базы данных!", e);
         }
     }
 
@@ -44,29 +44,28 @@ public class DbUtil {
                     result.add(value);
                 }
             } else {
-                Logger.logError("Результат не найден");
+                logError("Результат в базе данных не найден");
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logException("Произошла ошибка при выполнении SELECT запроса!", e);
         } finally {
             disconnect();
         }
         return result;
     }
 
-    public synchronized static String executeInsert(String sql) throws Exception {
+    public synchronized static String executeInsert(String sql) {
         connect();
         String request = String.format(sql);
         try {
             int response = statment.executeUpdate(request);
             if(response == 1) {
-                Logger.logSuccess("Запрос выполнен! \n" + request);
+                logSuccess("Запрос на добавление строк в базу данных выполнен!\n" + request);
             } else {
-                Logger.logError("Запрос не выполнен! \n" + request);
+                logError("Запрос на добавление строк в базу данных не выполнен!\n" + request);
             }
         } catch (SQLException e) {
-            throw new Exception("Добавление строк в таблицу не выполнено!\n" +
-                    e.getMessage());
+            logException("Запрос на добавление строк в базу данных не выполнен!", e);
         } finally {
             disconnect();
         }

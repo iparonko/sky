@@ -1,10 +1,12 @@
 package report;
 
 
-import log.Logger;
 import test.Test;
 
 import java.util.ArrayList;
+
+import static log.LoggerInfo.log;
+import static log.LoggerInfo.logError;
 
 public class Report {
     private String sourcePage; //исходная страница отчета
@@ -75,7 +77,7 @@ public class Report {
      */
     public void setNumberReport(int numberReport) {
         if(!((1 < numberReport) && (numberReport < 9999))) {
-            Logger.logError("Получен ошибочный номер отчета: [" + numberReport + "]");
+            logError("Получен ошибочный номер отчета: [" + numberReport + "]");
         } else {
             validNumberReport = true;
             this.numberReport = numberReport;
@@ -87,7 +89,7 @@ public class Report {
      */
     public void setStand(String stand) {
         if(!(stand.contains("test") && (stand.length() < 7))) {
-            Logger.logError("Получен ошибочное имя стенда: [" + stand + "]");
+            logError("Получен ошибочное имя стенда: [" + stand + "]");
         } else {
             validStand = true;
             this.stand = stand;
@@ -199,8 +201,8 @@ public class Report {
         return this.startTime;
     }
 
-    public void printInfoAboutReport() {
-        System.out.println("Номер прогона: [" + numberReport + "]\n" +
+    public void logInfoAboutReport() {
+        log("\nНомер прогона: [" + numberReport + "]\n" +
                 "Наименование стенда: [" + stand + "]\n" +
                 "Наименование тестового набора: [" + testSuite + "]\n" +
                 "Время начало прогона: [" + startTime + "]\n" +
