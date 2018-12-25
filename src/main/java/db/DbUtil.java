@@ -54,21 +54,23 @@ public class DbUtil {
         return result;
     }
 
-    public synchronized static String executeInsert(String sql) {
+    public synchronized static boolean executeInsert(String sql) {
         connect();
         String request = String.format(sql);
         try {
             int response = statment.executeUpdate(request);
             if(response == 1) {
                 logSuccess("Запрос на добавление строк в базу данных выполнен!\n" + request);
+                return true;
             } else {
                 logError("Запрос на добавление строк в базу данных не выполнен!\n" + request);
+                return false;
             }
         } catch (SQLException e) {
             logException("Запрос на добавление строк в базу данных не выполнен!", e);
         } finally {
             disconnect();
         }
-        return null;
+        return false;
     }
 }

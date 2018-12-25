@@ -2,6 +2,7 @@ package network;
 
 import util.StringUtil;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
@@ -196,6 +197,14 @@ public class ApiRequest {
                 headersNameGitLabLogin,
                 headersValueGitLabLogin
         );
+        try {
+            if(response.getResponseCode() == 404) {
+                logError("При выполнении запроса получен 404 ответ!");
+                return null;
+            }
+        } catch (IOException e) {
+            logException("Не выполнен запрос по получению кода ответа!", e);
+        }
         return response;
     }
 }

@@ -5,8 +5,8 @@ import test.Test;
 
 import java.util.ArrayList;
 
-import static log.LoggerInfo.log;
 import static log.LoggerInfo.logError;
+import static log.LoggerInfo.logSuccess;
 
 public class Report {
     private String sourcePage; //исходная страница отчета
@@ -202,7 +202,7 @@ public class Report {
     }
 
     public void logInfoAboutReport() {
-        log("\nНомер прогона: [" + numberReport + "]\n" +
+        logSuccess("Номер прогона: [" + numberReport + "]\n" +
                 "Наименование стенда: [" + stand + "]\n" +
                 "Наименование тестового набора: [" + testSuite + "]\n" +
                 "Время начало прогона: [" + startTime + "]\n" +

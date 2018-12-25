@@ -1,36 +1,23 @@
 package log;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 
 public class LoggerInfo {
     private static Logger log = Logger.getLogger(Logger.class.getName());
 
     public static void logException(String message, Exception e) {
-        log.log(Level.SEVERE,
-                "\n====================================================\n" +
-                        "[Ошибка - исключение] " + message + "" +
-                        "\n====================================================", e);
+        log.fatal("[Исключение] " + message, e);
     }
 
     public static void logSuccess(String message) {
-        log.log(Level.FINE,
-                "\n====================================================\n" +
-                        "[Выполнено] " + message +
-                        "\n====================================================");
-    }
-
-    public static void logError(String message) {
-        log.log(Level.SEVERE,
-                "\n====================================================\n" +
-                        "[Ошибка] " + message +
-                        "\n====================================================");
+        log("[Выполнено] " + message);
     }
 
     public static void log(String message) {
-        log.log(Level.FINE,
-                "\n====================================================\n" +
-                        message +
-                        "\n====================================================");
+        log.info(message);
+    }
+
+    public static void logError(String message) {
+        log.error("[Ошибка] " + message);
     }
 }

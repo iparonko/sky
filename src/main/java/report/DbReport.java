@@ -6,7 +6,7 @@ import test.Test;
 import java.util.ArrayList;
 
 public class DbReport {
-    public static void insertReport(Report report, String sessionKey) {
+    public static boolean insertReport(Report report, String sessionKey) {
         int numberReport = report.getNumberReport();
         String stand = report.getStand();
         String testSuite = report.getTestSuite();
@@ -16,7 +16,7 @@ public class DbReport {
         int countPassed = report.getCountPassed();
         int countFailed = report.getCountFailed();
         int countSkipped = report.getCountSkipped();
-        SqlClient.insertReport(numberReport, stand, testSuite, launchDuraction, startTime, totalCountTests, countPassed, countFailed, countSkipped, sessionKey);
+        return SqlClient.insertReport(numberReport, stand, testSuite, launchDuraction, startTime, totalCountTests, countPassed, countFailed, countSkipped, sessionKey);
     }
 
     public static void insertTest(int numberReport, String namePackageSuite, String nameTestEng, String nameTestRus, int status, String sessionKey) {

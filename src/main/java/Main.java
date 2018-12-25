@@ -39,10 +39,13 @@ public class Main {
 
     public synchronized static void saveNewReport(int numberReport) {
         HttpURLConnection response = getPageReport(numberReport);
-        String fullPageReport = Api.getSourcePage(response);
-        Report report = new Report(fullPageReport);
-        String guidSessionKey = DataGeneratorUtil.generateUUID();
-        DbReport.insertReport(report, guidSessionKey);
-        DbReport.insertAllTest(report, guidSessionKey);
+        if(response != null) {
+            String fullPageReport = Api.getSourcePage(response);
+            Report report = new Report(fullPageReport);
+            String guidSessionKey = DataGeneratorUtil.generateUUID();
+            if(DbReport.insertReport(report, guidSessionKey)) {
+                DbReport.insertAllTest(report, guidSessionKey);
+            }
+        }
     }
 }
