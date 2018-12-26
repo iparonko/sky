@@ -6,6 +6,7 @@ public class Test {
     private String nameTestEng; //имя теста Eng
     private String nameTestRus; //имя теста Rus
     private int status; //состояние: 0-упал, 1-прошел, 2-скипнут
+    private String bug; //ссылка на баг, если есть
 
     public static class StatusTest {
         public static final Integer FAILED = 0; //упал
@@ -13,12 +14,13 @@ public class Test {
         public static final Integer SKIPPED = 2; //пропущен
     }
 
-    public Test(int numberReport, String namePackageSuite, String nameTestEng, String nameTestRus, int status) {
+    public Test(int numberReport, String namePackageSuite, String nameTestEng, String nameTestRus, int status, String bug) {
         this.numberReport = numberReport;
         this.namePackageSuite = namePackageSuite;
         this.nameTestEng = nameTestEng;
         this.nameTestRus = nameTestRus;
         this.status = status;
+        this.bug = bug;
     }
 
     /**
@@ -54,5 +56,12 @@ public class Test {
      */
     public int getStatus() {
         return status;
+    }
+
+    /**
+     * Возвращает ссылку на баг
+     */
+    public String getBug() {
+        return this.bug;
     }
 }

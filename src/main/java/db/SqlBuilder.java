@@ -35,6 +35,7 @@ public class SqlBuilder {
             "NameTestEng, " +
             "NameTestRus, " +
             "Status, " +
+            "Bug, " +
             "SessionKey " +
             ") " +
             "VALUES ( " +
@@ -43,16 +44,21 @@ public class SqlBuilder {
             "'<nameTestEng>', " +
             "'<nameTestRus>', " +
             "'<status>', " +
+            "'<bug>', " +
             "'<sessionKey>' " +
             ");";
 
-    public static String insertTest(int numberReport, String namePackageSuite, String nameTestEng, String nameTestRus, int status, String sessionKey) {
+    public static String insertTest(int numberReport, String namePackageSuite, String nameTestEng, String nameTestRus, int status, String bug, String sessionKey) {
+        if(bug == null) {
+            bug = "0";
+        }
         return INSERT_TEST
                 .replace("<numberReport>", String.valueOf(numberReport))
                 .replace("<namePackageSuite>", namePackageSuite)
                 .replace("<nameTestEng>", nameTestEng)
                 .replace("<nameTestRus>", nameTestRus)
                 .replace("<status>", String.valueOf(status))
+                .replace("<bug>", bug)
                 .replace("<sessionKey>", sessionKey);
     }
 

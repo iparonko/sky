@@ -26,7 +26,7 @@ public class SqlClient {
     /**
      * Добавляет тест в базу
      */
-    public static void insertTest(int numberReport, String namePackageSuite, String nameTestEng, String nameTestRus, int status, String sessionKey) {
-        DbUtil.executeInsert(SqlBuilder.insertTest(numberReport, namePackageSuite, nameTestEng, nameTestRus, status, sessionKey));
+    public static void insertTest(int numberReport, String namePackageSuite, String nameTestEng, String nameTestRus, int status, String bug, String sessionKey) {
+        DbUtil.executeInsert(SqlBuilder.insertTest(numberReport, namePackageSuite, nameTestEng, nameTestRus, status, bug, sessionKey));
     }
 }

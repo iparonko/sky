@@ -53,6 +53,19 @@ public class ParserReport {
                 .replaceAll("_(.*)", "");
     }
 
+    private String getBug(String fullInfoAboutTest) {
+        String bug = StringUtil.findMatchByRegexp(fullInfoAboutTest, "myjetbrains\\.com\\/youtrack\\/issue\\/.*?\"");
+        if(bug != null) {
+            bug = bug.replaceAll("myjetbrains.com/youtrack/issue/", "")
+                    .replaceAll("\"", "");
+            String numberBug = StringUtil.findMatchByRegexp(bug, "\\d{1,}");
+            bug = bug.replaceAll("\\d{1,}", "");
+            bug += "-";
+            bug += numberBug;
+        }
+        return bug;
+    }
+
     /**
      * Возвращает имя теста на английском языке
      *
@@ -139,7 +152,8 @@ public class ParserReport {
                 String namePackageSuite = getNamePackageSuiteByFullInfoAboutTest(fullInfoAboutTest);
                 String nameTestEng = getNameTestEngByFullInfoAboutTest(fullInfoAboutTest);
                 String nameTestRus = getNameTestRusByFullInfoAboutTest(fullInfoAboutTest);
-                Test failedTest = new Test(report.getNumberReport(), namePackageSuite, nameTestEng, nameTestRus, statusTest);
+                String bug = getBug(fullInfoAboutTest);
+                Test failedTest = new Test(report.getNumberReport(), namePackageSuite, nameTestEng, nameTestRus, statusTest, bug);
                 report.addTestInTestsArray(failedTest);
                 fullInfoAboutTest = convertRegularExpressionCharacters(fullInfoAboutTest);
                 reportWork = reportWork.replaceAll(fullInfoAboutTest, "");
