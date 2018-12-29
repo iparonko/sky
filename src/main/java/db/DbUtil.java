@@ -85,7 +85,7 @@ public class DbUtil {
                 return true;
             } else {
                 logError("Запрос на обновление [" + expectedCountRow + "] строк в базе данных не выполнен!\n" +
-                        "Добавлено [" + response + "] строк!\n" + request);
+                        "Обновлено [" + response + "] строк!\n" + request);
                 return false;
             }
         } catch (SQLException e) {
