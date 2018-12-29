@@ -54,20 +54,42 @@ public class DbUtil {
         return result;
     }
 
-    public synchronized static boolean executeInsert(String sql) {
+    public synchronized static boolean executeInsert(String sql, int expectedCountRow) {
         connect();
         String request = String.format(sql);
         try {
             int response = statment.executeUpdate(request);
-            if(response == 1) {
-                logSuccess("Запрос на добавление строк в базу данных выполнен!\n" + request);
+            if(response == expectedCountRow) {
+                logSuccess("Запрос на добавление [" + expectedCountRow + "] строк в базу данных выполнен!\n" + request);
                 return true;
             } else {
-                logError("Запрос на добавление строк в базу данных не выполнен!\n" + request);
+                logError("Запрос на добавление [" + expectedCountRow + "] строк в базу данных не выполнен!\n" +
+                        "Добавлено [" + response + "] строк!\n" + request);
                 return false;
             }
         } catch (SQLException e) {
             logException("Запрос на добавление строк в базу данных не выполнен!", e);
+        } finally {
+            disconnect();
+        }
+        return false;
+    }
+
+    public synchronized static boolean executeUpdate(String sql, int expectedCountRow) {
+        connect();
+        String request = String.format(sql);
+        try {
+            int response = statment.executeUpdate(request);
+            if(response == expectedCountRow) {
+                logSuccess("Запрос на обновление [" + expectedCountRow + "] строк в базе данных выполнен!\n" + request);
+                return true;
+            } else {
+                logError("Запрос на обновление [" + expectedCountRow + "] строк в базе данных не выполнен!\n" +
+                        "Добавлено [" + response + "] строк!\n" + request);
+                return false;
+            }
+        } catch (SQLException e) {
+            logException("Запрос на обновление строк в базе данных не выполнен!", e);
         } finally {
             disconnect();
         }

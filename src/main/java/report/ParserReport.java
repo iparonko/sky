@@ -62,6 +62,8 @@ public class ParserReport {
             bug = bug.replaceAll("\\d{1,}", "");
             bug += "-";
             bug += numberBug;
+        } else {
+            bug = "0";
         }
         return bug;
     }

@@ -1,9 +1,8 @@
 package report;
 
 import db.SqlClient;
-import test.Test;
-
-import java.util.ArrayList;
+import log.LoggerInfo;
+import util.DataGeneratorUtil;
 
 public class DbReport {
     public static boolean insertReport(Report report, String sessionKey) {
@@ -19,16 +18,22 @@ public class DbReport {
         return SqlClient.insertReport(numberReport, stand, testSuite, launchDuraction, startTime, totalCountTests, countPassed, countFailed, countSkipped, sessionKey);
     }
 
-    public static void insertTest(int numberReport, String namePackageSuite, String nameTestEng, String nameTestRus, int status, String bug, String sessionKey) {
-        SqlClient.insertTest(numberReport, namePackageSuite, nameTestEng, nameTestRus, status, bug, sessionKey);
+    public static boolean insertAllTests(Report report, String sessionKey) {
+        return SqlClient.insertAllTests(report, sessionKey);
     }
 
-    public static void insertAllTest(Report report, String sessionKey) {
-        ArrayList<Test> tests = report.getTestsArray();
-        int countTest = report.getTotalCountTests();
-        for (int i = 0; i < countTest; i++) {
-            Test test = tests.get(i);
-            DbReport.insertTest(test.getNumberReport(), test.getNamePackageSuite(), test.getNameTestEng(), test.getNameTestRus(), test.getStatus(), test.getBug(), sessionKey);
+    public static String createSessionKey() {
+        String sessionKey = DataGeneratorUtil.generateUUID();
+        boolean result = SqlClient.insertSessionKey(sessionKey);
+        if(result) {
+            return sessionKey;
+        } else {
+            LoggerInfo.logError("SessionKey не сгенерирован!");
+            return "key_not_created";
         }
+    }
+
+    public static boolean updateSessionKeySetIsDone(String sessionKey) {
+        return SqlClient.updateSessionKeySetIsDone(sessionKey);
     }
 }

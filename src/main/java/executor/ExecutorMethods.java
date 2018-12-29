@@ -1,23 +1,18 @@
+package executor;
+
 import builds.BuildsInfo;
 import db.SqlClient;
 import network.Api;
 import report.DbReport;
 import report.Report;
-import util.DataGeneratorUtil;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
 import static log.LoggerInfo.logSuccess;
-import static network.Api.setJenkinsCookie;
 import static network.ApiRequest.getPageReport;
 
-public class Main {
-    public static void main(String[] args) {
-        setJenkinsCookie();
-        checkAndSaveNewReport();
-    }
-
+public class ExecutorMethods {
     public synchronized static void checkAndSaveNewReport() {
         int lastReportInDb = SqlClient.getLastReport();
         ArrayList<Integer> allBuildsAndroid = BuildsInfo.getAllBuildsAndroid();
@@ -38,13 +33,19 @@ public class Main {
     }
 
     public synchronized static void saveNewReport(int numberReport) {
+        boolean resultInsertAllTests = false;
         HttpURLConnection response = getPageReport(numberReport);
         if(response != null) {
             String fullPageReport = Api.getSourcePage(response);
             Report report = new Report(fullPageReport);
-            String guidSessionKey = DataGeneratorUtil.generateUUID();
-            if(DbReport.insertReport(report, guidSessionKey)) {
-                DbReport.insertAllTest(report, guidSessionKey);
+            String sessionKey = DbReport.createSessionKey();
+            if(!sessionKey.equals("key_not_created")) {
+                if(DbReport.insertReport(report, sessionKey)) {
+                    resultInsertAllTests = DbReport.insertAllTests(report, sessionKey);
+                }
+                if(resultInsertAllTests) {
+                    DbReport.updateSessionKeySetIsDone(sessionKey);
+                }
             }
         }
     }

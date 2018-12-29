@@ -29,38 +29,10 @@ public class SqlBuilder {
     private static String GET_LAST_REPORT = "SELECT MAX(NumberReport) " +
             "FROM Report";
 
-    private static String INSERT_TEST = "INSERT INTO Test ( " +
-            "NumberReport, " +
-            "NamePackageSuite, " +
-            "NameTestEng, " +
-            "NameTestRus, " +
-            "Status, " +
-            "Bug, " +
-            "SessionKey " +
-            ") " +
-            "VALUES ( " +
-            "'<numberReport>', " +
-            "'<namePackageSuite>', " +
-            "'<nameTestEng>', " +
-            "'<nameTestRus>', " +
-            "'<status>', " +
-            "'<bug>', " +
-            "'<sessionKey>' " +
-            ");";
+    private static String INSERT_SESSION_KEY = "INSERT INTO SessionKey (SessionKey) VALUES ('<sessionKey>');";
 
-    public static String insertTest(int numberReport, String namePackageSuite, String nameTestEng, String nameTestRus, int status, String bug, String sessionKey) {
-        if(bug == null) {
-            bug = "0";
-        }
-        return INSERT_TEST
-                .replace("<numberReport>", String.valueOf(numberReport))
-                .replace("<namePackageSuite>", namePackageSuite)
-                .replace("<nameTestEng>", nameTestEng)
-                .replace("<nameTestRus>", nameTestRus)
-                .replace("<status>", String.valueOf(status))
-                .replace("<bug>", bug)
-                .replace("<sessionKey>", sessionKey);
-    }
+    private static String UPDATE_SESSION_KEY_SET_IS_DONE = "UPDATE SessionKey SET isDone = 1 " +
+            "WHERE SessionKey = '<sessionKey>';";
 
     public static String insertReport(int numberReport, String stand, String testSuite, int launchDuraction, String startTime, int totalCountTests, int countPassed, int countFailed, int countSkipped, String sessionKey) {
         return INSERT_REPORT
@@ -78,5 +50,15 @@ public class SqlBuilder {
 
     public static String getLastReport() {
         return GET_LAST_REPORT;
+    }
+
+    public static String insertSessionKey(String sessionKey) {
+        return INSERT_SESSION_KEY
+                .replace("<sessionKey>", sessionKey);
+    }
+
+    public static String updateSessionKeySetIsDone(String sessionKey) {
+        return UPDATE_SESSION_KEY_SET_IS_DONE
+                .replace("<sessionKey>", sessionKey);
     }
 }
