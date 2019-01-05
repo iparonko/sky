@@ -32,7 +32,7 @@ public class SqlClient {
     public static boolean insertAllTests(Report report, String sessionKey) {
         ArrayList<Test> tests = report.getTestsArray();
         int countTest = report.getTotalCountTests();
-        String sql = "INSERT INTO Main (" +
+        String sql = "INSERT INTO Test (" +
                 "NumberReport, " +
                 "NamePackageSuite, " +
                 "NameTestEng, " +
