@@ -12,7 +12,7 @@ public class Frontend extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
         String urlRequest = request.getRequestURI();
         if(urlRequest.equals("/login")) {
-
+            System.out.println("login");
         } else if(urlRequest.equals("/checkandsavenewreport")) {
             checkAndSaveNewReport();
         }
