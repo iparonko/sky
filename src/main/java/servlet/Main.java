@@ -9,8 +9,8 @@ import static network.Api.setJenkinsCookie;
 
 public class Main {
     public static void main(String[] args) {
-        setJenkinsCookie();
-        new StartCyclicalReviewReportsThread().start();
+        //setJenkinsCookie();
+        //new StartCyclicalReviewReportsThread().start();
 
         Frontend frontend = new Frontend();
 
