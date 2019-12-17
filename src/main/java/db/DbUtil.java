@@ -1,7 +1,10 @@
 package db;
 
+import settings.Accounts;
+
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import static log.LoggerInfo.*;
 
@@ -11,11 +14,12 @@ public class DbUtil {
 
     public synchronized static void connect() {
         try {
-            Class.forName("org.sqlite.JDBC");
-            connecion = DriverManager.getConnection("jdbc:sqlite:sky.db");
+            String url = "jdbc:postgresql://postgresql.iparonko.myjino.ru/iparonko_sky";
+            Properties props = new Properties();
+            props.setProperty("user", Accounts.LOGIN_SQL);
+            props.setProperty("password",Accounts.PASSWORD_SQL);
+            connecion = DriverManager.getConnection(url, props);
             statment = connecion.createStatement();
-        } catch (ClassNotFoundException e) {
-            logException("Произошла ошибка при выполнении подключения к базе данных!", e);
         } catch (SQLException e) {
             logException("Произошла ошибка при выполнении подключения к базе данных!", e);
         }

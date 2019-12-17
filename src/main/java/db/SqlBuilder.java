@@ -31,6 +31,10 @@ public class SqlBuilder {
 
     private static String INSERT_SESSION_KEY = "INSERT INTO SessionKey (SessionKey) VALUES ('<sessionKey>');";
 
+    private static String INSERT_TEST_STRING = "INSERT INTO public.testtable " +
+            "(first_name) " +
+            "VALUES('<test>');";
+
     private static String UPDATE_SESSION_KEY_SET_IS_DONE = "UPDATE SessionKey SET isDone = 1 " +
             "WHERE SessionKey = '<sessionKey>';";
 
@@ -60,5 +64,10 @@ public class SqlBuilder {
     public static String updateSessionKeySetIsDone(String sessionKey) {
         return UPDATE_SESSION_KEY_SET_IS_DONE
                 .replace("<sessionKey>", sessionKey);
+    }
+
+    public static String insertTestString(String test) {
+        return INSERT_TEST_STRING
+                .replace("<test>", test);
     }
 }

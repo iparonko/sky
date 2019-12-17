@@ -2,6 +2,7 @@ package db;
 
 import report.Report;
 import test.Test;
+import util.DataGeneratorUtil;
 
 import java.util.ArrayList;
 
@@ -63,6 +64,10 @@ public class SqlClient {
 
     public static boolean insertSessionKey(String sessionKey) {
         return DbUtil.executeInsert(SqlBuilder.insertSessionKey(sessionKey), 1);
+    }
+
+    public static boolean insertTestString() {
+        return DbUtil.executeInsert(SqlBuilder.insertTestString(DataGeneratorUtil.generateUUID()), 1);
     }
 
     public static boolean updateSessionKeySetIsDone(String sessionKey) {
