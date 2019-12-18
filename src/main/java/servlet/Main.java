@@ -25,7 +25,7 @@ public class Main {
 
         Frontend frontend = new Frontend();
 
-        Server server = new Server(new InetSocketAddress("ovz9.iparonko.me78p.vps.myjino.ru", 5777));
+        Server server = new Server(new InetSocketAddress("paronko.ru", 5777));
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         server.setHandler(context);
         context.addServlet(new ServletHolder(frontend), "/checkandsavenewreport");
