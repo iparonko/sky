@@ -15,14 +15,14 @@ public class Main {
         //setJenkinsCookie();
         //new StartCyclicalReviewReportsThread().start();
 
-        while(true){
+        /*while(true){
             SqlClient.insertTestString();
             Thread.sleep(10000);
-        }
+        }*/
 
-        /*Frontend frontend = new Frontend();
+        Frontend frontend = new Frontend();
 
-        Server server = new Server(new InetSocketAddress("ovz9.iparonko.me78p.vps.myjino.ru", 5777));
+        Server server = new Server(new InetSocketAddress("paronko.ru", 5777));
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         server.setHandler(context);
         context.addServlet(new ServletHolder(frontend), "/checkandsavenewreport");
@@ -37,6 +37,6 @@ public class Main {
             server.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 }
