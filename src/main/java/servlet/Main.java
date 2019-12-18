@@ -2,6 +2,7 @@ package servlet;
 
 import db.SqlClient;
 import executor.StartCyclicalReviewReportsThread;
+import log.LoggerInfo;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -19,6 +20,8 @@ public class Main {
             SqlClient.insertTestString();
             Thread.sleep(10000);
         }*/
+
+        LoggerInfo.log("Старт сервера");
 
         Frontend frontend = new Frontend();
 
